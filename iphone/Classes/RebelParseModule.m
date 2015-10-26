@@ -360,13 +360,30 @@
 }
 
 #pragma Push Notifications
+-(void)registerForSinglePushChannel:(id)args {
+    NSString *deviceToken;
+    NSString *channel;
+    
+    ENSURE_ARG_COUNT(args, 2);
+    ENSURE_ARG_AT_INDEX(deviceToken, args, 0, NSString);
+    ENSURE_ARG_AT_INDEX(channel, args, 1, NSString);
+    
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    
+    [currentInstallation setDeviceToken:deviceToken];
+    [currentInstallation addUniqueObject:channel forKey:@"channels"];
+    [currentInstallation saveInBackground];
+    
+    NSLog(@"Register for channel and set device token %@", deviceToken);
+}
+
 -(void)registerDeviceToken:(id)deviceToken
 {
     ENSURE_SINGLE_ARG(deviceToken, NSString);
     
     // Store the deviceToken in the current Installation and save it to Parse.
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
-    [currentInstallation setDeviceTokenFromData:[deviceToken dataUsingEncoding:NSUTF8StringEncoding]];
+    [currentInstallation setDeviceToken:deviceToken];
     [currentInstallation saveInBackground];
 }
 
@@ -385,6 +402,12 @@
     
     PFInstallation *currentInstallation = [PFInstallation currentInstallation];
     [currentInstallation removeObject:channel forKey:@"channels"];
+    [currentInstallation saveInBackground];
+}
+
+- (void)unsubscribeFromAllChannels:(id)args {
+    PFInstallation *currentInstallation = [PFInstallation currentInstallation];
+    currentInstallation.channels = [NSArray array];
     [currentInstallation saveInBackground];
 }
 

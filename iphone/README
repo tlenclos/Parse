@@ -2,4 +2,6 @@
 
 Appcelerator Titanium module wrapping the Parse iOS SDK
 
+Attention ! This module can't be used with other facebook modules as Parse SDK depends on it.
+
 **Very much work in progress!**
